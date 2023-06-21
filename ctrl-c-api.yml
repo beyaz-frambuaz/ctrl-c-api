@@ -1,0 +1,650 @@
+openapi: 3.0.0
+info:
+  version: '1.0'
+  title: ctrl-c API
+  description: ''
+servers:
+  - url: 'http://localhost:8080/api/v1'
+    description: localhost
+paths:
+  /collections:
+    get:
+      summary: Search collections by tags or by author
+      description: ''
+      operationId: get-collections
+      parameters:
+        - name: tags
+          in: query
+          description: search terms
+          schema:
+            type: string
+        - name: author
+          in: query
+          description: userId
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recommendations:
+                    $ref: '#/components/schemas/shortcut'
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/collection'
+              examples:
+                Example 1:
+                  value:
+                    recommendations:
+                      id: '123'
+                      action: Top 5 shortcuts across collections
+                      likes: null
+                      tags: null
+                      isMigration: null
+                      isBlock: true
+                      bindings: null
+                      shortcuts:
+                        - id: '1234'
+                          action: Reopen most recently closed tab
+                          likes: 678
+                          tags:
+                            - chrome
+                            - mac
+                            - web
+                          isMigration: false
+                          isBlock: false
+                          bindings:
+                            - binding:
+                                - cmd
+                                - shift
+                                - T
+                              platform: mac
+                              software: chrome
+                          shortcuts: null
+                    results:
+                      - id: '123456'
+                        name: Chrome win -> mac migration!
+                        tags:
+                          - mac
+                          - win/linux
+                          - chrome
+                        software:
+                          - chrome
+                        platform:
+                          - mac
+                          - win/linux
+                        likes: 234
+                        forks: 334
+                        author:
+                          id: string
+                          name: string
+                          avatarUrl: string
+                        isMigration: true
+                        isPublic: true
+                        createdOn: string
+                        shortcuts:
+                          - id: '1234567'
+                            action: Open new tab
+                            isMigration: true
+                            isBlock: false
+                            likes: 324
+                            tags:
+                              - chrome
+                              - mac
+                              - win/linux
+                              - migration
+                            bindings:
+                              - binding:
+                                  - cmd
+                                  - T
+                                platform: mac
+                                software: chrome
+                              - binding:
+                                  - ctrl
+                                  - T
+                                platform: win/linux
+                                software: chrome
+                            shortcuts: null
+      servers:
+        - url: 'http://localhost:8080/api/v1'
+          description: localhost
+      x-internal: false
+    post:
+      summary: Create new collection
+      operationId: post-collections
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/collection'
+      responses:
+        '201':
+          description: Created
+      servers:
+        - url: 'http://localhost:8080/api/v1'
+          description: localhost
+      x-internal: false
+  '/collections/{id}':
+    get:
+      summary: GET collection by id
+      operationId: get-collections-id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/collection'
+      servers:
+        - url: 'http://localhost:8080/api/v1'
+          description: localhost
+      x-internal: false
+    put:
+      summary: Edit collection layout
+      operationId: put-collections-id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/collection'
+      responses:
+        '200':
+          description: OK
+      servers:
+        - url: 'http://localhost:8080/api/v1'
+          description: localhost
+      x-internal: false
+    patch:
+      summary: Update collection elements
+      description: Use this when the layout is not changed
+      operationId: patch-collections-id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                likes:
+                  type: number
+                forks:
+                  type: number
+                isPublic:
+                  type: boolean
+      responses:
+        '200':
+          description: OK
+      servers:
+        - url: 'http://localhost:8080/api/v1'
+          description: localhost
+      x-internal: false
+    delete:
+      summary: Remove collection
+      operationId: delete-collections-id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+      servers:
+        - url: 'http://localhost:8080/api/v1'
+          description: localhost
+  '/collections/{id}/pdf':
+    get:
+      summary: GET collection as PDF
+      operationId: get-collections-pdf
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/pdf:
+              schema:
+                type: object
+      servers:
+        - url: 'http://localhost:8080/api/v1'
+          description: localhost
+      x-internal: false
+  /users:
+    post:
+      summary: Create new user
+      operationId: post-users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+      responses:
+        '201':
+          description: Created
+      servers:
+        - url: 'http://localhost:8080/api/v1'
+          description: localhost
+      x-internal: false
+  '/users/{id}':
+    get:
+      summary: GET user
+      operationId: get-users-id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+      servers:
+        - url: 'http://localhost:8080/api/v1'
+          description: localhost
+      x-internal: false
+    put:
+      summary: Edit user
+      operationId: put-users-id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/user'
+      responses:
+        '200':
+          description: OK
+      servers:
+        - url: 'http://localhost:8080/api/v1'
+          description: localhost
+      x-internal: false
+    patch:
+      summary: Update user likes
+      operationId: patch-users-id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                collectionId:
+                  type: string
+                shortcutId:
+                  type: string
+                operation:
+                  type: string
+              required:
+                - operation
+            examples:
+              Like collection:
+                value:
+                  collectionId: '123'
+                  operation: ADD
+              Unlike shortcut:
+                value:
+                  shortcutId: '123'
+                  operation: REMOVE
+      responses:
+        '200':
+          description: OK
+      servers:
+        - url: 'http://localhost:8080/api/v1'
+          description: localhost
+      x-internal: false
+    delete:
+      summary: Remove user
+      operationId: delete-users-id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+      servers:
+        - url: 'http://localhost:8080/api/v1'
+          description: localhost
+      x-internal: false
+  /shortcuts:
+    get:
+      summary: Search shortcuts by tags
+      description: ''
+      operationId: get-shortcuts
+      parameters:
+        - name: tags
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/shortcut'
+      servers:
+        - url: 'http://localhost:8080/api/v1'
+          description: localhost
+      x-internal: false
+    post:
+      summary: Create new shortcut
+      description: ''
+      operationId: post-shortcuts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/shortcut'
+      responses:
+        '201':
+          description: Created
+      servers:
+        - url: 'http://localhost:8080/api/v1'
+          description: localhost
+      x-internal: false
+  '/shortcuts/{id}':
+    get:
+      summary: GET shortcut by id
+      description: ''
+      operationId: get-shortcuts-id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/shortcut'
+      servers:
+        - url: 'http://localhost:8080/api/v1'
+          description: localhost
+      x-internal: false
+    put:
+      summary: Edit shortcut
+      operationId: put-shortcuts-id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/shortcut'
+      responses:
+        '200':
+          description: OK
+      servers:
+        - url: 'http://localhost:8080/api/v1'
+          description: localhost
+      x-internal: false
+    patch:
+      summary: Update shortcut likes
+      operationId: patch-shortcuts-id
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                likes:
+                  type: number
+      responses:
+        '200':
+          description: OK
+      servers:
+        - url: 'http://localhost:8080/api/v1'
+          description: localhost
+      x-internal: false
+components:
+  schemas:
+    shortcut:
+      type: object
+      title: shortcut
+      description: |
+        Generic shortcut representation that can **either** hold key bindings **or** other shortcuts. The distinction is mutually exclusive: on the one hand, shortcuts that act as blocks will **only** hold other shortcuts and will **not** have any bindings, likes, or tags; on the other hand, shortcuts that hold bindings will **not** have other shortcuts.
+        Migration shortcuts will aid with migrating either between platforms or software, hence multiple key bindings will represent that.
+      properties:
+        id:
+          type: string
+        action:
+          type: string
+        likes:
+          type: integer
+        tags:
+          type: array
+          items:
+            type: string
+        isMigration:
+          type: boolean
+          description: Indicates whether shortcut contains multiple platform/software bindings
+        isBlock:
+          type: boolean
+          description: 'Indicates that a shortcut has no bindings, but rather acts as a block of shortcuts'
+        bindings:
+          type: array
+          items:
+            type: object
+            properties:
+              binding:
+                type: array
+                items:
+                  type: string
+              platform:
+                type: string
+              software:
+                type: string
+        shortcuts:
+          type: array
+          items:
+            $ref: '#/components/schemas/shortcut'
+      required:
+        - id
+      x-examples:
+        Example 1:
+          id: 1234567
+          action: Open new tab
+          isMigration: true
+          isBlock: false
+          likes: 324
+          tags:
+            - chrome
+            - mac
+            - win/linux
+            - migration
+          bindings:
+            - binding:
+                - cmd
+                - T
+              platform: mac
+              software: chrome
+            - binding:
+                - ctrl
+                - T
+              platform: win/linux
+              software: chrome
+          shortcuts: null
+        Example 2:
+          id: 1234568
+          action: Open new tab
+          isMigration: true
+          isBlock: false
+          likes: 33
+          tags:
+            - chrome
+            - safari
+            - mac
+            - migration
+          bindings:
+            - binding:
+                - cmd
+                - T
+              platform: mac
+              software: chrome
+            - binding:
+                - cmd
+                - T
+              platform: mac
+              software: safari
+          shortcuts: null
+        Example 3:
+          id: 1234569
+          action: Working with tabs
+          isMigration: null
+          isBlock: true
+          likes: null
+          tags: null
+          bindings: null
+          shortcuts:
+            - id: 1234567
+              action: Open new tab
+              isMigration: false
+              isBlock: false
+              likes: 324
+              tags:
+                - chrome
+                - mac
+              bindings:
+                - binding:
+                    - cmd
+                    - T
+                  platform: mac
+                  software: chrome
+              shortcuts: null
+    collection:
+      type: object
+      title: collection
+      description: Collection of shortcuts
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        software:
+          type: array
+          items:
+            type: string
+        platform:
+          type: array
+          items:
+            type: string
+        likes:
+          type: number
+        forks:
+          type: number
+        author:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            avatarUrl:
+              type: string
+          required:
+            - id
+        isMigration:
+          type: boolean
+        isPublic:
+          type: boolean
+        createdOn:
+          type: string
+        shortcuts:
+          type: array
+          items:
+            $ref: '#/components/schemas/shortcut'
+      required:
+        - id
+    user:
+      type: object
+      title: user
+      description: Registered user representation
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        avatarUrl:
+          type: string
+        likes:
+          type: object
+          properties:
+            collections:
+              type: array
+              items:
+                type: string
+            shortcuts:
+              type: array
+              items:
+                type: string
+      required:
+        - id
+x-internal: false
