@@ -1,15 +1,23 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
-  version: '1.0'
   title: ctrl-c API
-  description: ''
+  description: API contract for ctrl-c shortcut collections
+  version: '1.0'
 servers:
-  - url: 'http://localhost:8080/api/v1'
+  - url: 'http://localhost:8080'
     description: localhost
+tags:
+  - name: Collections
+    description: Shortcut collections API
+  - name: Users
+    description: API related to user profiles and preferences
+
 paths:
-  /collections:
+  '/api/v1/collections':
     get:
       summary: Search collections by tags or by author
+      tags:
+        - Collections
       description: ''
       operationId: get-collections
       parameters:
@@ -32,11 +40,11 @@ paths:
                 type: object
                 properties:
                   recommendations:
-                    $ref: '#/components/schemas/shortcut'
+                    $ref: '#/components/schemas/Shortcut'
                   results:
                     type: array
                     items:
-                      $ref: '#/components/schemas/collection'
+                      $ref: '#/components/schemas/ShortcutCollection'
               examples:
                 Example 1:
                   value:
@@ -113,25 +121,27 @@ paths:
       servers:
         - url: 'http://localhost:8080/api/v1'
           description: localhost
-      x-internal: false
     post:
       summary: Create new collection
+      tags:
+        - Collections
       operationId: post-collections
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/collection'
+              $ref: '#/components/schemas/ShortcutCollection'
       responses:
         '201':
           description: Created
       servers:
         - url: 'http://localhost:8080/api/v1'
           description: localhost
-      x-internal: false
-  '/collections/{id}':
+  '/api/v1/collections/{id}':
     get:
       summary: GET collection by id
+      tags:
+        - Collections
       operationId: get-collections-id
       parameters:
         - name: id
@@ -145,13 +155,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/collection'
+                $ref: '#/components/schemas/ShortcutCollection'
       servers:
         - url: 'http://localhost:8080/api/v1'
           description: localhost
-      x-internal: false
     put:
       summary: Edit collection layout
+      tags:
+        - Collections
       operationId: put-collections-id
       parameters:
         - name: id
@@ -163,16 +174,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/collection'
+              $ref: '#/components/schemas/ShortcutCollection'
       responses:
         '200':
           description: OK
       servers:
         - url: 'http://localhost:8080/api/v1'
           description: localhost
-      x-internal: false
     patch:
       summary: Update collection elements
+      tags:
+        - Collections
       description: Use this when the layout is not changed
       operationId: patch-collections-id
       parameters:
@@ -201,9 +213,10 @@ paths:
       servers:
         - url: 'http://localhost:8080/api/v1'
           description: localhost
-      x-internal: false
     delete:
       summary: Remove collection
+      tags:
+        - Collections
       operationId: delete-collections-id
       parameters:
         - name: id
@@ -212,14 +225,16 @@ paths:
           schema:
             type: string
       responses:
-        '200':
-          description: OK
+        '204':
+          description: Success
       servers:
         - url: 'http://localhost:8080/api/v1'
           description: localhost
-  '/collections/{id}/pdf':
+  '/api/v1/collections/{id}/pdf':
     get:
       summary: GET collection as PDF
+      tags:
+        - Collections
       operationId: get-collections-pdf
       parameters:
         - name: id
@@ -237,124 +252,11 @@ paths:
       servers:
         - url: 'http://localhost:8080/api/v1'
           description: localhost
-      x-internal: false
-  /users:
-    post:
-      summary: Create new user
-      operationId: post-users
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/user'
-      responses:
-        '201':
-          description: Created
-      servers:
-        - url: 'http://localhost:8080/api/v1'
-          description: localhost
-      x-internal: false
-  '/users/{id}':
-    get:
-      summary: GET user
-      operationId: get-users-id
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/user'
-      servers:
-        - url: 'http://localhost:8080/api/v1'
-          description: localhost
-      x-internal: false
-    put:
-      summary: Edit user
-      operationId: put-users-id
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/user'
-      responses:
-        '200':
-          description: OK
-      servers:
-        - url: 'http://localhost:8080/api/v1'
-          description: localhost
-      x-internal: false
-    patch:
-      summary: Update user likes
-      operationId: patch-users-id
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: ''
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                collectionId:
-                  type: string
-                shortcutId:
-                  type: string
-                operation:
-                  type: string
-              required:
-                - operation
-            examples:
-              Like collection:
-                value:
-                  collectionId: '123'
-                  operation: ADD
-              Unlike shortcut:
-                value:
-                  shortcutId: '123'
-                  operation: REMOVE
-      responses:
-        '200':
-          description: OK
-      servers:
-        - url: 'http://localhost:8080/api/v1'
-          description: localhost
-      x-internal: false
-    delete:
-      summary: Remove user
-      operationId: delete-users-id
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: OK
-      servers:
-        - url: 'http://localhost:8080/api/v1'
-          description: localhost
-      x-internal: false
-  /shortcuts:
+  '/api/v1/shortcuts':
     get:
       summary: Search shortcuts by tags
+      tags:
+        - Collections
       description: ''
       operationId: get-shortcuts
       parameters:
@@ -370,30 +272,32 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/shortcut'
+                  $ref: '#/components/schemas/Shortcut'
       servers:
         - url: 'http://localhost:8080/api/v1'
           description: localhost
-      x-internal: false
     post:
       summary: Create new shortcut
+      tags:
+        - Collections
       description: ''
       operationId: post-shortcuts
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/shortcut'
+              $ref: '#/components/schemas/Shortcut'
       responses:
         '201':
           description: Created
       servers:
         - url: 'http://localhost:8080/api/v1'
           description: localhost
-      x-internal: false
-  '/shortcuts/{id}':
+  '/api/v1/shortcuts/{id}':
     get:
       summary: GET shortcut by id
+      tags:
+        - Collections
       description: ''
       operationId: get-shortcuts-id
       parameters:
@@ -408,13 +312,14 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/shortcut'
+                $ref: '#/components/schemas/Shortcut'
       servers:
         - url: 'http://localhost:8080/api/v1'
           description: localhost
-      x-internal: false
     put:
       summary: Edit shortcut
+      tags:
+        - Collections
       operationId: put-shortcuts-id
       parameters:
         - name: id
@@ -426,16 +331,17 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/shortcut'
+              $ref: '#/components/schemas/Shortcut'
       responses:
         '200':
           description: OK
       servers:
         - url: 'http://localhost:8080/api/v1'
           description: localhost
-      x-internal: false
     patch:
       summary: Update shortcut likes
+      tags:
+        - Collections
       operationId: patch-shortcuts-id
       parameters:
         - name: id
@@ -457,194 +363,544 @@ paths:
       servers:
         - url: 'http://localhost:8080/api/v1'
           description: localhost
-      x-internal: false
+
+  '/api/v1/users/profile':
+    post:
+      tags:
+        - Users
+      summary: Create new user profile
+      operationId: createUserProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          description: Client Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'error-schemas.yml#/ValidationErrorResponse'
+              example:
+                value:
+                  {
+                    "type": "VALIDATION_ERROR",
+                    "title": "The provided input is invalid",
+                    "instance": "/api/v1/users/profile",
+                    "details": [
+                      {
+                        "name": "name",
+                        "reason": "is missing"
+                      }
+                    ]
+                  }
+        '500':
+          description: Internal Service Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'error-schemas.yml#/BaseErrorResponse'
+              example:
+                value:
+                  {
+                    "type": "INTERNAL_SERVER_ERROR",
+                    "title": "Unexpected server error",
+                    "instance": "/api/v1/users/profile"
+                  }
+        '503':
+          description: Service Unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'error-schemas.yml#/BaseErrorResponse'
+              example:
+                value:
+                  {
+                    "type": "SERVICE_UNAVAILABLE",
+                    "title": "ctrl-c is unavailable",
+                    "instance": "/api/v1/users/profile",
+                    "details": [
+                      {
+                        "reason": "Database unavailable"
+                      }
+                    ]
+                  }
+
+  '/api/v1/users/{id}/profile':
+    get:
+      tags:
+        - Users
+      summary: Fetch user profile
+      operationId: fetchUserProfile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          style: simple
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '404':
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'error-schemas.yml#/BaseErrorResponse'
+              example:
+                value:
+                  {
+                    "type": "NOT_FOUND",
+                    "title": "User profile not found",
+                    "instance": "/api/v1/users/{id}/profile"
+                  }
+        '500':
+          description: Internal Service Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'error-schemas.yml#/BaseErrorResponse'
+              example:
+                value:
+                  {
+                    "type": "INTERNAL_SERVER_ERROR",
+                    "title": "Unexpected server error",
+                    "instance": "/api/v1/users/{id}/profile"
+                  }
+        '503':
+          description: Service Unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'error-schemas.yml#/BaseErrorResponse'
+              example:
+                value:
+                  {
+                    "type": "SERVICE_UNAVAILABLE",
+                    "title": "ctrl-c is unavailable",
+                    "instance": "/api/v1/users/{id}/profile",
+                    "details": [
+                      {
+                        "reason": "Database unavailable"
+                      }
+                    ]
+                  }
+    delete:
+      tags:
+        - Users
+      summary: Delete user profile
+      operationId: deleteUserProfile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          style: simple
+      responses:
+        '204':
+          description: Success
+        '404':
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'error-schemas.yml#/BaseErrorResponse'
+              example:
+                value:
+                  {
+                    "type": "NOT_FOUND",
+                    "title": "User profile not found",
+                    "instance": "/api/v1/users/{id}/profile"
+                  }
+        '500':
+          description: Internal Service Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'error-schemas.yml#/BaseErrorResponse'
+              example:
+                value:
+                  {
+                    "type": "INTERNAL_SERVER_ERROR",
+                    "title": "Unexpected server error",
+                    "instance": "/api/v1/users/{id}/profile"
+                  }
+        '503':
+          description: Service Unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'error-schemas.yml#/BaseErrorResponse'
+              example:
+                value:
+                  {
+                    "type": "SERVICE_UNAVAILABLE",
+                    "title": "ctrl-c is unavailable",
+                    "instance": "/api/v1/users/{id}/profile",
+                    "details": [
+                      {
+                        "reason": "Database unavailable"
+                      }
+                    ]
+                  }
+
+  '/api/v1/users/{id}/collections':
+    get:
+      tags:
+        - Users
+      summary: Fetch user collections
+      operationId: fetchUserCollections
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          style: simple
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserCollectionsResponse'
+        '404':
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'error-schemas.yml#/BaseErrorResponse'
+              example:
+                value:
+                  {
+                    "type": "NOT_FOUND",
+                    "title": "User profile not found",
+                    "instance": "/api/v1/users/{id}/collections"
+                  }
+        '500':
+          description: Internal Service Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'error-schemas.yml#/BaseErrorResponse'
+              example:
+                value:
+                  {
+                    "type": "INTERNAL_SERVER_ERROR",
+                    "title": "Unexpected server error",
+                    "instance": "/api/v1/users/{id}/collections"
+                  }
+        '503':
+          description: Service Unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'error-schemas.yml#/BaseErrorResponse'
+              example:
+                value:
+                  {
+                    "type": "SERVICE_UNAVAILABLE",
+                    "title": "ctrl-c is unavailable",
+                    "instance": "/api/v1/users/{id}/collections",
+                    "details": [
+                      {
+                        "reason": "Database unavailable"
+                      }
+                    ]
+                  }
+    delete:
+      tags:
+        - Users
+      summary: Delete user collections
+      operationId: deleteUserCollections
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          style: simple
+      responses:
+        '204':
+          description: Success
+        '404':
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'error-schemas.yml#/BaseErrorResponse'
+              example:
+                value:
+                  {
+                    "type": "NOT_FOUND",
+                    "title": "User profile not found",
+                    "instance": "/api/v1/users/{id}/collections"
+                  }
+        '500':
+          description: Internal Service Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'error-schemas.yml#/BaseErrorResponse'
+              example:
+                value:
+                  {
+                    "type": "INTERNAL_SERVER_ERROR",
+                    "title": "Unexpected server error",
+                    "instance": "/api/v1/users/{id}/collections"
+                  }
+        '503':
+          description: Service Unavailable
+          content:
+            application/problem+json:
+              schema:
+                $ref: 'error-schemas.yml#/BaseErrorResponse'
+              example:
+                value:
+                  {
+                    "type": "SERVICE_UNAVAILABLE",
+                    "title": "ctrl-c is unavailable",
+                    "instance": "/api/v1/users/{id}/collections",
+                    "details": [
+                      {
+                        "reason": "Database unavailable"
+                      }
+                    ]
+                  }
+
 components:
   schemas:
-    shortcut:
+
+    Shortcut:
+      title: Shortcut
+      description: Shortcut representation that holds key bindings.
       type: object
-      title: shortcut
-      description: |
-        Generic shortcut representation that can **either** hold key bindings **or** other shortcuts. The distinction is mutually exclusive: on the one hand, shortcuts that act as blocks will **only** hold other shortcuts and will **not** have any bindings, likes, or tags; on the other hand, shortcuts that hold bindings will **not** have other shortcuts.
-        Migration shortcuts will aid with migrating either between platforms or software, hence multiple key bindings will represent that.
+      required:
+        - id
+        - action
+        - bindings
       properties:
         id:
           type: string
+          description: Shortcut id
+          format: uuid
+          example: '550e8400-e29b-41d4-a716-44665544001'
         action:
           type: string
+          description: Shortcut action
+          example: 'Open new tab'
         likes:
           type: integer
+          description: Number of likes this shortcut received
+          example: 255
         tags:
           type: array
+          description: List of tags used for searching (comprised of key bindings keyboard and software)
           items:
             type: string
+          example: [ '#chrome', '#mac' ]
         isMigration:
           type: boolean
-          description: Indicates whether shortcut contains multiple platform/software bindings
-        isBlock:
-          type: boolean
-          description: 'Indicates that a shortcut has no bindings, but rather acts as a block of shortcuts'
+          description: Indicates whether shortcut contains multiple keyboard/software bindings
+          example: false
         bindings:
           type: array
           items:
-            type: object
-            properties:
-              binding:
-                type: array
-                items:
-                  type: string
-              platform:
-                type: string
-              software:
-                type: string
-        shortcuts:
-          type: array
-          items:
-            $ref: '#/components/schemas/shortcut'
+            $ref: '#/components/schemas/KeyBinding'
+          minItems: 1
+
+    KeyBinding:
+      title: KeyBinding
+      description: Shortcut key binding representation
+      type: object
       required:
-        - id
-      x-examples:
-        Example 1:
-          id: 1234567
-          action: Open new tab
-          isMigration: true
-          isBlock: false
-          likes: 324
-          tags:
-            - chrome
+        - keys
+        - keyboard
+        - software
+      properties:
+        keys:
+          type: array
+          description: List of keys
+          items:
+            type: string
+          example: [ 'cmd', 'T' ]
+          minItems: 1
+        keyboard:
+          type: string
+          description: Keyboard type
+          enum:
             - mac
             - win/linux
-            - migration
-          bindings:
-            - binding:
-                - cmd
-                - T
-              platform: mac
-              software: chrome
-            - binding:
-                - ctrl
-                - T
-              platform: win/linux
-              software: chrome
-          shortcuts: null
-        Example 2:
-          id: 1234568
-          action: Open new tab
-          isMigration: true
-          isBlock: false
-          likes: 33
-          tags:
-            - chrome
-            - safari
-            - mac
-            - migration
-          bindings:
-            - binding:
-                - cmd
-                - T
-              platform: mac
-              software: chrome
-            - binding:
-                - cmd
-                - T
-              platform: mac
-              software: safari
-          shortcuts: null
-        Example 3:
-          id: 1234569
-          action: Working with tabs
-          isMigration: null
-          isBlock: true
-          likes: null
-          tags: null
-          bindings: null
-          shortcuts:
-            - id: 1234567
-              action: Open new tab
-              isMigration: false
-              isBlock: false
-              likes: 324
-              tags:
-                - chrome
-                - mac
-              bindings:
-                - binding:
-                    - cmd
-                    - T
-                  platform: mac
-                  software: chrome
-              shortcuts: null
-    collection:
+          example: 'mac'
+        software:
+          type: string
+          description: Name of software
+          example: 'chrome'
+
+    ShortcutBlock:
+      title: ShortcutBlock
+      description: Block of shortcuts
       type: object
-      title: collection
-      description: Collection of shortcuts
+      required:
+        - id
+        - shortcuts
       properties:
         id:
           type: string
+          description: Shortcut block id
+          format: uuid
+          example: '550e8400-e29b-41d4-a716-44665544000'
+        title:
+          type: string
+          description: Shortcut block title
+          example: 'Working with tabs'
+        shortcuts:
+          type: array
+          description: List of shortcuts this block groups together
+          minItems: 1
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/Shortcut'
+              - $ref: '#/components/schemas/ShortcutBlock'
+
+    ShortcutCollection:
+      title: ShortcutCollection
+      description: Collection of shortcuts
+      type: object
+      required:
+        - id
+        - name
+        - author
+      properties:
+        id:
+          type: string
+          description: Collection id
+          format: uuid
+          example: '550e8400-e29b-41d4-a716-44665544003'
         name:
           type: string
+          description: Collection name
+          example: 'IntelliJ IDEA top 20 shortcuts'
         tags:
           type: array
+          description: List of tags used for searching (comprised of shortcuts tags)
           items:
             type: string
+          example: [ '#intellij_idea', '#mac' ]
+        keyboard:
+          type: string
+          description: Keyboard type
+          enum:
+            - mac
+            - win/linux
+          example: 'mac'
         software:
-          type: array
-          items:
-            type: string
-        platform:
-          type: array
-          items:
-            type: string
+          type: string
+          description: Name of software
+          example: 'IntelliJ IDEA'
         likes:
-          type: number
+          type: integer
+          description: Number of likes this collection received
+          example: 1231
         forks:
           type: number
+          description: Number of times this collection was forked
+          example: 251
         author:
-          type: object
-          properties:
-            id:
-              type: string
-            name:
-              type: string
-            avatarUrl:
-              type: string
-          required:
-            - id
+          type: string
+          description: Author's profile id
+          format: uuid
+          example: '550e8400-e29b-41d4-a716-44665544004'
         isMigration:
           type: boolean
+          description: Indicates whether collection contains multiple keyboard/software bindings
+          example: false
         isPublic:
           type: boolean
+          description: Indicates whether user made this collection public of kept it private
         createdOn:
           type: string
+          description: Creation timestamp
+          format: date-time
         shortcuts:
           type: array
           items:
-            $ref: '#/components/schemas/shortcut'
+            oneOf:
+              - $ref: '#/components/schemas/Shortcut'
+              - $ref: '#/components/schemas/ShortcutBlock'
+
+    UserProfile:
+      title: UserProfile
+      description: Registered user representation
+      type: object
       required:
         - id
-    user:
-      type: object
-      title: user
-      description: Registered user representation
+        - name
+        - email
       properties:
         id:
           type: string
+          description: User profile id
+          format: uuid
+          example: '550e8400-e29b-41d4-a716-44665544002'
         name:
           type: string
+          description: User display name
+          minLength: 1
+          example: 'John Doe'
         email:
           type: string
+          description: User email address
+          format: email
+          pattern: '^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$'
         avatarUrl:
           type: string
+          description: Avatar location to be loaded for displaying
+          format: uri
+
+    UserCollectionsResponse:
+      title: UserCollectionsResponse
+      description: User profile response
+      type: object
+      properties:
+        id:
+          type: string
+          description: User profile id
+          format: uuid
+          example: '550e8400-e29b-41d4-a716-44665544002'
+        bookmarked:
+          type: array
+          description: List of collection ids user bookmarked
+          items:
+            type: string
+            format: uuid
         likes:
           type: object
+          description: List of collections and shortcuts user liked
           properties:
             collections:
               type: array
+              description: List of collection ids the user liked
               items:
                 type: string
+                format: uuid
             shortcuts:
               type: array
+              description: List of shortcut ids the user liked
               items:
                 type: string
-      required:
-        - id
-x-internal: false
+                format: uuid

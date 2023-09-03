@@ -1,0 +1,80 @@
+BaseErrorResponse:
+  title: BaseErrorResponse
+  required:
+    - type
+    - title
+    - instance
+  type: object
+  properties:
+    type:
+      type: string
+      description: Error code
+      example: 'ERROR'
+    title:
+      type: string
+      description: Description of the error
+      example: Request failed
+    instance:
+      type: string
+      description: Path of initial endpoint that was called
+      example: /api/v1/resource-path
+    details:
+      type: array
+      description: Contains detailed description of the problem
+      items:
+        $ref: '#/BaseErrorDetails'
+
+ValidationErrorResponse:
+  title: BaseValidationErrorResponse
+  required:
+    - type
+    - title
+    - instance
+  type: object
+  properties:
+    type:
+      type: string
+      description: Error code
+      example: 'VALIDATION_ERROR'
+    title:
+      type: string
+      description: Description of the error
+      example: Request failed validation
+    instance:
+      type: string
+      description: Path of initial endpoint that was called
+      example: /api/v1/resource-path
+    details:
+      type: array
+      description: Contains details of the problems in initial request
+      items:
+        $ref: '#/ErrorDetails'
+
+BaseErrorDetails:
+  title: BaseErrorDetails
+  type: object
+  properties:
+    name:
+      type: string
+      description: JSON Path to the field in initial request
+      example: fieldName
+    reason:
+      type: string
+      description: Error reason explanation
+      example: Database unavailable
+
+ErrorDetails:
+  title: ValidationErrorDetails
+  required:
+    - name
+    - reason
+  type: object
+  properties:
+    name:
+      type: string
+      description: JSON Path to the field in initial request
+      example: fieldName
+    reason:
+      type: string
+      description: Validation error message
+      example: must not be null
